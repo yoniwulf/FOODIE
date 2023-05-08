@@ -8,6 +8,17 @@ Created on Tue Apr 25 19:15:02 2023
 
 import heapq
 
+class Order:
+	def __init__(self, order_id, destination):
+		self.id = order_id
+		self.destination = destination
+		self.is_bagged = False
+
+	def copy(self):
+		new_order = Order(self.id, self.destination)
+		new_order.is_bagged = self.is_bagged
+		return new_order
+
 class Item:
 	def __init__(self, size, fragile, freeze):
 		self.size = 0
@@ -41,7 +52,7 @@ class Bag:
 			self.items.append(item)
 			return True
 		return False
-		
+
 class PathwaySystem:
 	def __init__(self, width, height, obstacles=None):
 		self.width = width
@@ -89,29 +100,16 @@ class PathwaySystem:
 	def get_cost(self, current, next):
 		return 1  # Assuming uniform cost for all moves
 
-class Order:
-	def __init__(self, order_id, destination):
-		self.id = order_id
-		self.destination = destination
-		self.is_bagged = False
-
-	def copy(self):
-		new_order = Order(self.id, self.destination)
-		new_order.is_bagged = self.is_bagged
-		return new_order
-
 class DeliveryRobot:
-	def __init__(self, id, pathway, battery_capacity, arm, current_order, compartment_capacity, warehouse_location):
+	def __init__(self, id, pathway, battery_capacity, current_order, warehouse_location):
 		self.id = id
 		self.pathway = pathway
 		self.battery_capacity = battery_capacity
 		self.battery_level = battery_capacity
 		self.battery = battery_capacity  # Add this line to initialize the battery
-		self.arm = arm
 		self.warehouse_location = warehouse_location
-		self.x, self.y = warehouse_location
+		self.x, self.y = self.warehouse_location
 		self.current_order = current_order
-		self.compartment_capacity = compartment_capacity
 		self.compartment = []
 		self.paperBag = Bag("paper", 10, 0)
 		self.freezerBag = Bag("freezer", 5, 0)
@@ -335,6 +333,7 @@ class DeliverySystem:
 			for i in range(num_robots)
 		]  # Removed extra arguments here
 
+
 	def add_robot(self, x, y):
 		robot = DeliveryRobot(x, y, self.grid_size, self.warehouse_location, self.pathway_system, self.compartment_capacity)
 		self.robots.append(robot)
@@ -456,7 +455,8 @@ class DeliverySystem:
 					robot.move_to_destination(path_to_warehouse)
 					print(f"Robot {robot.id} returned to warehouse and is now at location {robot.x}, {robot.y}")
 					robot.current_order = None
-			
+
+	'''	
 	def assign_order(self, order):
 		min_path_length = float("inf")
 		selected_robot = None
@@ -485,7 +485,8 @@ class DeliverySystem:
 
 		selected_robot.follow_path(selected_path)
 		selected_robot.deliver_order(order)
-
+		'''
+	
 	def charge_idle_robots(self, charge_amount):
 		for robot in self.robots:
 			if not robot.has_order():
